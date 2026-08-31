@@ -1,0 +1,124 @@
+{
+  "request": {
+    "urlPath": "/api/tasks/poll/batch/get_weather",
+    "method": "GET"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": [
+      {
+        "taskType": "get_weather",
+        "status": "IN_PROGRESS",
+        "inputData": {
+          "_agent_tool_name": "get_weather",
+          "_agent_state": {},
+          "method": "get_weather",
+          "city": "Lisbon",
+          "units": "metric"
+        },
+        "referenceTaskName": "CALL_1_0__1",
+        "retryCount": 0,
+        "seq": 9,
+        "taskDefName": "get_weather",
+        "startDelayInSeconds": 0,
+        "retried": false,
+        "executed": false,
+        "callbackFromWorker": true,
+        "responseTimeoutSeconds": 10,
+        "workflowInstanceId": "EXEC_1",
+        "workflowType": "weather",
+        "taskId": "TASK_1",
+        "outputData": {},
+        "workflowTask": {
+          "name": "get_weather",
+          "taskReferenceName": "CALL_1_0",
+          "inputParameters": {
+            "_agent_tool_name": "get_weather",
+            "_agent_state": {},
+            "method": "get_weather",
+            "city": "Lisbon",
+            "units": "metric"
+          },
+          "type": "SIMPLE",
+          "decisionCases": {},
+          "defaultCase": [],
+          "forkTasks": [],
+          "startDelay": 0,
+          "joinOn": [],
+          "optional": true,
+          "taskDefinition": {
+            "createdBy": "",
+            "updatedBy": "",
+            "name": "get_weather",
+            "retryCount": 2,
+            "timeoutSeconds": 0,
+            "inputKeys": [],
+            "outputKeys": [],
+            "runtimeMetadata": [],
+            "timeoutPolicy": "RETRY",
+            "retryLogic": "LINEAR_BACKOFF",
+            "retryDelaySeconds": 2,
+            "responseTimeoutSeconds": 10,
+            "inputTemplate": {},
+            "rateLimitPerFrequency": 0,
+            "rateLimitFrequencyInSeconds": 1,
+            "backoffScaleFactor": 1,
+            "maxRetryDelaySeconds": 0,
+            "backoffJitterMs": 0,
+            "totalTimeoutSeconds": 0,
+            "taskStatusListenerEnabled": true,
+            "enforceSchema": false
+          },
+          "defaultExclusiveJoinTask": [],
+          "asyncComplete": false,
+          "loopOver": [],
+          "retryCount": 2,
+          "onStateChange": {},
+          "permissive": false,
+          "metadata": {}
+        },
+        "rateLimitPerFrequency": 0,
+        "rateLimitFrequencyInSeconds": 1,
+        "workflowPriority": 0,
+        "iteration": 1,
+        "subworkflowChanged": false,
+        "executionMetadata": {
+          "additionalContext": {},
+          "additionalContextMap": {},
+          "empty": true
+        },
+        "taskDefinition": {
+          "createdBy": "",
+          "updatedBy": "",
+          "name": "get_weather",
+          "retryCount": 2,
+          "timeoutSeconds": 0,
+          "inputKeys": [],
+          "outputKeys": [],
+          "runtimeMetadata": [],
+          "timeoutPolicy": "RETRY",
+          "retryLogic": "LINEAR_BACKOFF",
+          "retryDelaySeconds": 2,
+          "responseTimeoutSeconds": 10,
+          "inputTemplate": {},
+          "rateLimitPerFrequency": 0,
+          "rateLimitFrequencyInSeconds": 1,
+          "backoffScaleFactor": 1,
+          "maxRetryDelaySeconds": 0,
+          "backoffJitterMs": 0,
+          "totalTimeoutSeconds": 0,
+          "taskStatusListenerEnabled": true,
+          "enforceSchema": false
+        },
+        "loopOverTask": true
+      }
+    ]
+  },
+  "priority": 1,
+  "scenarioName": "agent_tool_happy_path",
+  "requiredScenarioState": "Started",
+  "newScenarioState": "step_1"
+}

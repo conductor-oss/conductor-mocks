@@ -1,0 +1,25 @@
+{
+  "request": {
+    "url": "/api/metadata/taskdefs",
+    "method": "PUT",
+    "bodyPatterns": [
+      {
+        "equalToJson": {
+          "name": "get_weather",
+          "retryCount": 2,
+          "timeoutSeconds": 0,
+          "timeoutPolicy": "RETRY",
+          "retryLogic": "LINEAR_BACKOFF",
+          "retryDelaySeconds": 2,
+          "responseTimeoutSeconds": 10,
+          "enforceSchema": false
+        },
+        "ignoreArrayOrder": true,
+        "ignoreExtraElements": true
+      }
+    ]
+  },
+  "response": {
+    "status": 200
+  }
+}

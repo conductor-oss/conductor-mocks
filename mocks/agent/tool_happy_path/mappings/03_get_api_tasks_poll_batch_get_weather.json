@@ -1,0 +1,14 @@
+{
+  "request": {
+    "urlPath": "/api/tasks/poll/batch/get_weather",
+    "method": "GET"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": []
+  },
+  "priority": 10
+}

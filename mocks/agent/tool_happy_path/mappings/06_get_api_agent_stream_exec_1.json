@@ -1,0 +1,17 @@
+{
+  "request": {
+    "url": "/api/agent/stream/EXEC_1",
+    "method": "GET"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "text/event-stream"
+    },
+    "body": ":connected\n\nid:1\nevent:thinking\ndata:{\"id\":1,\"type\":\"thinking\",\"executionId\":\"EXEC_1\",\"content\":\"weather_llm__1\",\"timestamp\":0}\n\nid:2\nevent:tool_call\ndata:{\"id\":2,\"type\":\"tool_call\",\"executionId\":\"EXEC_1\",\"toolName\":\"get_weather\",\"args\":{\"_agent_tool_name\":\"get_weather\",\"_agent_state\":{},\"method\":\"get_weather\",\"city\":\"Lisbon\",\"units\":\"metric\"},\"timestamp\":0}\n\nid:3\nevent:tool_result\ndata:{\"id\":3,\"type\":\"tool_result\",\"executionId\":\"EXEC_1\",\"toolName\":\"get_weather\",\"result\":{\"temp_c\":21.0,\"summary\":\"Sunny in Lisbon\"},\"timestamp\":0}\n\nid:4\nevent:thinking\ndata:{\"id\":4,\"type\":\"thinking\",\"executionId\":\"EXEC_1\",\"content\":\"weather_llm__2\",\"timestamp\":0}\n\nid:5\nevent:done\ndata:{\"id\":5,\"type\":\"done\",\"executionId\":\"EXEC_1\",\"output\":{\"result\":\"The weather in Lisbon is currently sunny with a temperature of 21°C. Would you like to know more about the forecast or anything else?\",\"finishReason\":\"STOP\",\"context\":{},\"rejectionReason\":null},\"timestamp\":0}\n\n",
+    "chunkedDribbleDelay": {
+      "numberOfChunks": 10,
+      "totalDuration": 3000
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "request": {
+    "url": "/api/tasks/update-v2",
+    "method": "POST",
+    "bodyPatterns": [
+      {
+        "equalToJson": {
+          "workflowInstanceId": "EXEC_1",
+          "taskId": "TASK_1",
+          "status": "COMPLETED",
+          "outputData": {
+            "temp_c": 21.0,
+            "summary": "Sunny in Lisbon"
+          },
+          "extendLease": false
+        },
+        "ignoreArrayOrder": true,
+        "ignoreExtraElements": true
+      }
+    ]
+  },
+  "response": {
+    "status": 204
+  }
+}

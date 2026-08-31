@@ -1,0 +1,63 @@
+{
+  "request": {
+    "url": "/api/agent/start",
+    "method": "POST",
+    "bodyPatterns": [
+      {
+        "equalToJson": {
+          "agentConfig": {
+            "name": "weather",
+            "model": "openai/gpt-4o-mini",
+            "maxTurns": 25,
+            "timeoutSeconds": 0,
+            "external": false,
+            "instructions": "Answer weather questions.",
+            "tools": [
+              {
+                "name": "get_weather",
+                "description": "Get the current weather for a city.",
+                "inputSchema": {
+                  "type": "object",
+                  "properties": {
+                    "city": {
+                      "type": "string"
+                    },
+                    "units": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "city"
+                  ]
+                },
+                "toolType": "worker",
+                "outputSchema": {
+                  "type": "object",
+                  "additionalProperties": {}
+                }
+              }
+            ]
+          },
+          "prompt": "Weather in Lisbon?",
+          "sessionId": "",
+          "media": []
+        },
+        "ignoreArrayOrder": true,
+        "ignoreExtraElements": true
+      }
+    ]
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "executionId": "EXEC_1",
+      "agentName": "weather",
+      "requiredWorkers": [
+        "get_weather"
+      ]
+    }
+  }
+}
