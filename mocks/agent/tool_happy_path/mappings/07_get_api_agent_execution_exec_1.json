@@ -1,0 +1,332 @@
+{
+  "request": {
+    "url": "/api/agent/execution/EXEC_1",
+    "method": "GET"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "executionId": "EXEC_1",
+      "agentName": "weather",
+      "version": 1,
+      "status": "COMPLETED",
+      "input": {
+        "prompt": "Weather in Lisbon?",
+        "media": [],
+        "context": {},
+        "session_id": "",
+        "cwd": "."
+      },
+      "output": {
+        "result": "The weather in Lisbon is currently sunny with a temperature of 21°C. Would you like to know more about the forecast or anything else?",
+        "finishReason": "STOP",
+        "context": {},
+        "rejectionReason": null
+      },
+      "tokenUsage": {
+        "promptTokens": 196,
+        "completionTokens": 50,
+        "totalTokens": 246
+      },
+      "tasks": [
+        {
+          "taskType": "INLINE",
+          "referenceTaskName": "weather_ctx_resolve",
+          "status": "COMPLETED",
+          "outputData": {
+            "result": {}
+          }
+        },
+        {
+          "taskType": "SET_VARIABLE",
+          "referenceTaskName": "weather_init_state",
+          "status": "COMPLETED",
+          "outputData": {}
+        },
+        {
+          "taskType": "DO_WHILE",
+          "referenceTaskName": "weather_loop",
+          "status": "COMPLETED",
+          "outputData": {
+            "iteration": 2,
+            "1": {
+              "weather_llm": {
+                "result": [],
+                "media": [],
+                "finishReason": "TOOL_CALLS",
+                "tokenUsed": 75,
+                "promptTokens": 55,
+                "completionTokens": 20,
+                "toolCalls": [
+                  {
+                    "taskReferenceName": "CALL_1",
+                    "name": "get_weather",
+                    "integrationNames": {},
+                    "type": "SIMPLE",
+                    "inputParameters": {
+                      "method": "get_weather",
+                      "city": "Lisbon",
+                      "units": "metric"
+                    }
+                  }
+                ],
+                "responseId": "resp_095af9362ed4956d006a95dd003eb887d0a78b155da64070f8",
+                "reasoningTokens": 0
+              },
+              "weather_fork_join": {
+                "CALL_1_0__1": {
+                  "_agent_tool_name": "get_weather",
+                  "_agent_tool_output": {
+                    "temp_c": 21.0,
+                    "summary": "Sunny in Lisbon"
+                  }
+                }
+              },
+              "weather_set_state": {},
+              "weather_enrich_tools": {
+                "result": {
+                  "dynamicTasks": [
+                    {
+                      "retryDelaySeconds": 2,
+                      "retryCount": 2,
+                      "retryLogic": "LINEAR_BACKOFF",
+                      "name": "get_weather",
+                      "optional": true,
+                      "taskReferenceName": "CALL_1_0",
+                      "type": "SIMPLE",
+                      "inputParameters": {
+                        "_agent_tool_name": "get_weather",
+                        "_agent_state": {},
+                        "method": "get_weather",
+                        "city": "Lisbon",
+                        "units": "metric"
+                      }
+                    }
+                  ]
+                }
+              },
+              "weather_merge_state": {
+                "result": {
+                  "toolResults": [
+                    {
+                      "output": {
+                        "summary": "Sunny in Lisbon",
+                        "temp_c": 21
+                      },
+                      "name": "get_weather"
+                    }
+                  ],
+                  "mergedState": {}
+                }
+              },
+              "weather_ctx_inject": {
+                "result": ""
+              },
+              "weather_tool_router": {
+                "evaluationResult": [
+                  "tool_call"
+                ],
+                "selectedCase": "tool_call"
+              },
+              "weather_fork": {}
+            },
+            "2": {
+              "weather_llm": {
+                "result": "The weather in Lisbon is currently sunny with a temperature of 21°C. Would you like to know more about the forecast or anything else?",
+                "media": [],
+                "finishReason": "STOP",
+                "tokenUsed": 171,
+                "promptTokens": 141,
+                "completionTokens": 30,
+                "responseId": "resp_0ea85ec4f196b614006a95dd020ed887d0b3274f11796858c6",
+                "reasoningTokens": 0
+              },
+              "weather_ctx_inject": {
+                "result": "[TOOL RESULTS]\n[{\"output\":{\"summary\":\"Sunny in Lisbon\",\"temp_c\":21},\"name\":\"get_weather\"}]\n[/TOOL RESULTS]\n\n"
+              },
+              "weather_tool_router": {
+                "evaluationResult": [
+                  "none"
+                ],
+                "selectedCase": "none"
+              }
+            }
+          }
+        },
+        {
+          "taskType": "INLINE",
+          "referenceTaskName": "weather_ctx_inject__1",
+          "status": "COMPLETED",
+          "outputData": {
+            "result": ""
+          }
+        },
+        {
+          "taskType": "LLM_CHAT_COMPLETE",
+          "referenceTaskName": "weather_llm__1",
+          "status": "COMPLETED",
+          "outputData": {
+            "result": [],
+            "media": [],
+            "finishReason": "TOOL_CALLS",
+            "tokenUsed": 75,
+            "promptTokens": 55,
+            "completionTokens": 20,
+            "toolCalls": [
+              {
+                "taskReferenceName": "CALL_1",
+                "name": "get_weather",
+                "integrationNames": {},
+                "type": "SIMPLE",
+                "inputParameters": {
+                  "method": "get_weather",
+                  "city": "Lisbon",
+                  "units": "metric"
+                }
+              }
+            ],
+            "responseId": "resp_095af9362ed4956d006a95dd003eb887d0a78b155da64070f8",
+            "reasoningTokens": 0
+          }
+        },
+        {
+          "taskType": "SWITCH",
+          "referenceTaskName": "weather_tool_router__1",
+          "status": "COMPLETED",
+          "outputData": {
+            "evaluationResult": [
+              "tool_call"
+            ],
+            "selectedCase": "tool_call"
+          }
+        },
+        {
+          "taskType": "INLINE",
+          "referenceTaskName": "weather_enrich_tools__1",
+          "status": "COMPLETED",
+          "outputData": {
+            "result": {
+              "dynamicTasks": [
+                {
+                  "retryDelaySeconds": 2,
+                  "retryCount": 2,
+                  "retryLogic": "LINEAR_BACKOFF",
+                  "name": "get_weather",
+                  "optional": true,
+                  "taskReferenceName": "CALL_1_0",
+                  "type": "SIMPLE",
+                  "inputParameters": {
+                    "_agent_tool_name": "get_weather",
+                    "_agent_state": {},
+                    "method": "get_weather",
+                    "city": "Lisbon",
+                    "units": "metric"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "taskType": "FORK",
+          "referenceTaskName": "weather_fork__1",
+          "status": "COMPLETED",
+          "outputData": {}
+        },
+        {
+          "taskType": "get_weather",
+          "referenceTaskName": "CALL_1_0__1",
+          "status": "COMPLETED",
+          "outputData": {
+            "temp_c": 21.0,
+            "summary": "Sunny in Lisbon"
+          }
+        },
+        {
+          "taskType": "JOIN",
+          "referenceTaskName": "weather_fork_join__1",
+          "status": "COMPLETED",
+          "outputData": {
+            "CALL_1_0__1": {
+              "_agent_tool_name": "get_weather",
+              "_agent_tool_output": {
+                "temp_c": 21.0,
+                "summary": "Sunny in Lisbon"
+              }
+            }
+          }
+        },
+        {
+          "taskType": "INLINE",
+          "referenceTaskName": "weather_merge_state__1",
+          "status": "COMPLETED",
+          "outputData": {
+            "result": {
+              "toolResults": [
+                {
+                  "output": {
+                    "summary": "Sunny in Lisbon",
+                    "temp_c": 21
+                  },
+                  "name": "get_weather"
+                }
+              ],
+              "mergedState": {}
+            }
+          }
+        },
+        {
+          "taskType": "SET_VARIABLE",
+          "referenceTaskName": "weather_set_state__1",
+          "status": "COMPLETED",
+          "outputData": {}
+        },
+        {
+          "taskType": "INLINE",
+          "referenceTaskName": "weather_ctx_inject__2",
+          "status": "COMPLETED",
+          "outputData": {
+            "result": "[TOOL RESULTS]\n[{\"output\":{\"summary\":\"Sunny in Lisbon\",\"temp_c\":21},\"name\":\"get_weather\"}]\n[/TOOL RESULTS]\n\n"
+          }
+        },
+        {
+          "taskType": "LLM_CHAT_COMPLETE",
+          "referenceTaskName": "weather_llm__2",
+          "status": "COMPLETED",
+          "outputData": {
+            "result": "The weather in Lisbon is currently sunny with a temperature of 21°C. Would you like to know more about the forecast or anything else?",
+            "media": [],
+            "finishReason": "STOP",
+            "tokenUsed": 171,
+            "promptTokens": 141,
+            "completionTokens": 30,
+            "responseId": "resp_0ea85ec4f196b614006a95dd020ed887d0b3274f11796858c6",
+            "reasoningTokens": 0
+          }
+        },
+        {
+          "taskType": "SWITCH",
+          "referenceTaskName": "weather_tool_router__2",
+          "status": "COMPLETED",
+          "outputData": {
+            "evaluationResult": [
+              "none"
+            ],
+            "selectedCase": "none"
+          }
+        },
+        {
+          "taskType": "INLINE",
+          "referenceTaskName": "weather_synth_output",
+          "status": "COMPLETED",
+          "outputData": {
+            "result": "The weather in Lisbon is currently sunny with a temperature of 21°C. Would you like to know more about the forecast or anything else?"
+          }
+        }
+      ]
+    }
+  }
+}

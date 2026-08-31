@@ -59,29 +59,48 @@ Each scenario directory is a WireMock root: `mappings/` (the stubs) and
 Recording is manual, local, and real everything: your own conductor-oss, real
 provider integrations, a real LLM. Nothing is spun up for you.
 
+Use WireMock's **snapshot recorder** (`/__admin/recordings`), NOT the legacy
+`--record-mappings` flag — the legacy recorder keeps one stub per unique URL,
+so the task-bearing poll response is silently lost among the empty polls that
+share its URL. The snapshot recorder captures every request, with repeats as
+an ordered scenario chain.
+
 1. Start conductor-oss locally (e.g. `:8080`) with your LLM provider
    configured.
-2. Start WireMock as a recording proxy in front of it:
+2. Start WireMock and begin recording through it as a proxy:
 
    ```bash
-   docker run -it --rm -p 9999:8080 -v $PWD/recording:/home/wiremock \
-     wiremock/wiremock:3x \
-     --record-mappings --proxy-all=http://host.docker.internal:8080
+   docker run -d --name recorder -p 9999:8080 \
+     --add-host=host.docker.internal:host-gateway \
+     -v $PWD/recording:/home/wiremock:Z \
+     wiremock/wiremock:3x
+   curl -X POST http://localhost:9999/__admin/recordings/start \
+     -H 'Content-Type: application/json' \
+     -d '{"targetBaseUrl": "http://host.docker.internal:8080",
+          "repeatsAsScenarios": true, "persist": true,
+          "extractBodyCriteria": {"textSizeThreshold": "2048",
+                                  "binarySizeThreshold": "1"}}'
    ```
+
+   (The `:Z` mount flag matters on SELinux hosts — without it WireMock
+   silently persists nothing.)
 
 3. Run the SDK test/example against the proxy
    (`CONDUCTOR_SERVER_URL=http://localhost:9999/api`). The agent genuinely
    runs: real compile, real provider calls, real tool execution.
-4. Normalize and file the captured mappings:
+4. Stop recording, then normalize and file the captured mappings:
 
    ```bash
+   curl -X POST http://localhost:9999/__admin/recordings/stop
+   docker stop recorder && docker rm recorder
    python scripts/normalize.py recording --scenario agent/tool_happy_path
    ```
 
-   The normalizer rewrites volatile identifiers (`wf_8f3a` → `EXEC_1`,
-   task ids → `TASK_1`), drops timestamps and per-recording noise, collapses
-   empty polls, scrubs auth material, and files the result under
-   `mocks/agent/tool_happy_path/`.
+   The normalizer rewrites volatile identifiers (execution ids → `EXEC_1`,
+   task ids → `TASK_1`, LLM call ids → `CALL_1`), drops timestamps and
+   per-recording noise, scrubs auth material, reworks the poll chain for
+   machine-independent replay, paces the SSE stream, and files the result
+   under `mocks/agent/tool_happy_path/`.
 
 5. Open a PR. The diff is the review artifact.
 
@@ -101,11 +120,22 @@ from the scenario directory — the official image, no packaging:
 
 Notes on replay behavior:
 
-- Ordered behavior is enforced with WireMock **scenarios** (recorded via
-  `repeatsAsScenarios`): a stub only matches in the recorded order.
-- The tool assertion is structural: the recorded `POST /tasks` stub only
-  matches the recorded body — a wrong tool result matches nothing and the
-  run fails.
-- WireMock has no native SSE streaming. That is irrelevant here: an agent's
-  event stream terminates at `done`, so the captured body is complete and
-  replay delivers it un-paced.
+- Task polls replay machine-independently: the normalizer strips the
+  recorded query params (the poll `workerid` is the recording machine's
+  hostname) and splits polls into one stateless low-priority catch-all for
+  empty responses plus one high-priority scenario step per task-bearing
+  poll (`Started` → `step_1` → …). Any number of polls at any time replays
+  correctly.
+- The tool assertion is structural: the recorded task-update stub
+  (`POST /api/tasks/update-v2`) only matches the recorded body — a wrong
+  tool result matches nothing and the run fails. Verify it in tests via
+  the request journal (`GET /__admin/requests`), and assert
+  `GET /__admin/requests/unmatched` is empty.
+- WireMock has no native SSE streaming, and the captured stream body is
+  complete (an agent's stream terminates at `done`) — but replaying it
+  **un-paced is not enough**: `done` then arrives before the SDK's task
+  worker fires its first poll, the runtime shuts down, and the tool never
+  executes — the run goes green without ever exercising the task-update
+  stub. The normalizer therefore paces event-stream responses with a
+  `chunkedDribbleDelay` (~3s), restoring the concurrency window in which
+  the tool genuinely runs. (Verified empirically with the python-sdk.)
